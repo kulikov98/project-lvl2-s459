@@ -1,5 +1,8 @@
 {
     "name": "kulikov98/gendiff",
+    "bin" : [
+        "bin/gendiff"
+    ],
     "description": "A utility for finding differences in configuration files.",
     "type": "project",
     "authors": [

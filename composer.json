@@ -1,0 +1,18 @@
+{
+    "name": "kulikov98/gendiff",
+    "description": "A utility for finding differences in configuration files.",
+    "type": "project",
+    "authors": [
+        {
+            "name": "kulikov98",
+            "email": "kulikov98@gmail.com"
+        }
+    ],
+    "require": {
+        "wp-cli/php-cli-tools": "^0.11.11",
+        "docopt/docopt": "^1.0"
+    },
+    "autoload": {"files": [
+        "src/Cli.php"
+    ]}
+}

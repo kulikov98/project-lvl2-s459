@@ -16,7 +16,9 @@
         "wp-cli/php-cli-tools": "^0.11.11",
         "docopt/docopt": "^1.0"
     },
-    "autoload": {"files": [
-        "src/Cli.php"
-    ]}
+    "autoload": {
+        "files": [
+            "src/Cli.php"
+        ]
+    }
 }

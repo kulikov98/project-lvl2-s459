@@ -10,7 +10,8 @@ if (file_exists($autoloadPath1)) {
     require_once $autoloadPath2;
 }
 
-use function \Gendiff\Cli\run;
+use function \Differ\genDiff;
+use function \cli\line;
 
 const DOC = <<<DOC
     Generate diff
@@ -24,4 +25,11 @@ const DOC = <<<DOC
         --format <fmt>                Report format [default: pretty]
 DOC;
 
-run(DOC);
+$args = (new \Docopt\Handler)->handle(DOC);
+
+define('FIRST_PATH', $args->args['<firstFile>']);
+define('SECOND_PATH', $args->args['<secondFile>']);
+
+$diff = genDiff(FIRST_PATH, SECOND_PATH);
+
+line($diff);

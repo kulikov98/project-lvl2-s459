@@ -1,20 +1,11 @@
 <?php
 
-namespace Gendiff\Cli;
+namespace Differ;
 
-use function \cli\line;
-use function \cli\prompt;
-use function Docopt\array_merge;
-
-function run($doc)
+function genDiff($firstPath, $secondPath)
 {
-    $args = (new \Docopt\Handler)->handle($doc);
-
-    define('FIRST_PATH', $args->args['<firstFile>']);
-    define('SECOND_PATH', $args->args['<secondFile>']);
-
-    $firstFile = json_decode(file_get_contents(FIRST_PATH), true);
-    $secondFile = json_decode(file_get_contents(SECOND_PATH), true);
+    $firstFile = json_decode(file_get_contents($firstPath), true);
+    $secondFile = json_decode(file_get_contents($secondPath), true);
 
     $keys = array_unique(array_keys(array_merge($firstFile, $secondFile)));
 
@@ -38,10 +29,10 @@ function run($doc)
                 $acc[] = "- {$item}: {$firstFile[$item]}";
             }
         }
-        $acc[] = '}';
-
 		return $acc;
     }, ['{']);
+
+    $res[] = '}';
     
-    var_dump($res);
+    return implode(PHP_EOL, $res);
 }

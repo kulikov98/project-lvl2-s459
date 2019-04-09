@@ -6,3 +6,5 @@
 <a href="https://asciinema.org/a/8nKulZM63g3d54D1GMMGKVrQs" target="_blank"><img src="https://asciinema.org/a/8nKulZM63g3d54D1GMMGKVrQs.svg" /></a>
 <h2>Step 2</h2>
 <a href="https://asciinema.org/a/blMAXdSqfcDUvo2SOw4zVOrPr" target="_blank"><img src="https://asciinema.org/a/blMAXdSqfcDUvo2SOw4zVOrPr.svg" /></a>
+<h2>Step 3</h2>
+<a href="https://asciinema.org/a/mMXiP2rubwNKKOx7HL2bgR0lq" target="_blank"><img src="https://asciinema.org/a/mMXiP2rubwNKKOx7HL2bgR0lq.svg" /></a>

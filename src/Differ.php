@@ -9,7 +9,7 @@ function genDiff($firstPath, $secondPath)
 
     $keys = array_unique(array_keys(array_merge($firstFile, $secondFile)));
 
-    $res = array_reduce($keys, function($acc, $item) use ($firstFile, $secondFile) {
+    $res = array_reduce($keys, function ($acc, $item) use ($firstFile, $secondFile) {
         // deleted value
         if (key_exists($item, $firstFile) && !key_exists($item, $secondFile)) {
             $acc[] = "- {$item}: {$firstFile[$item]}";
@@ -29,7 +29,7 @@ function genDiff($firstPath, $secondPath)
                 $acc[] = "- {$item}: {$firstFile[$item]}";
             }
         }
-		return $acc;
+        return $acc;
     }, ['{']);
 
     $res[] = '}';

@@ -13,37 +13,35 @@ function run($doc)
     define('FIRST_PATH', $args->args['<firstFile>']);
     define('SECOND_PATH', $args->args['<secondFile>']);
 
-    define('FIRST_FILE', json_decode(file_get_contents(FIRST_PATH), true));
-    define('SECOND_FILE', json_decode(file_get_contents(SECOND_PATH), true));
+    $firstFile = json_decode(file_get_contents(FIRST_PATH), true);
+    $secondFile = json_decode(file_get_contents(SECOND_PATH), true);
 
-    $res = array_reduce(FIRST_FILE, function($carry, $value) {
-        print "{$carry}";
-    }, []);
+    $keys = array_unique(array_keys(array_merge($firstFile, $secondFile)));
+
+    $res = array_reduce($keys, function($acc, $item) use ($firstFile, $secondFile) {
+        // deleted value
+        if (key_exists($item, $firstFile) && !key_exists($item, $secondFile)) {
+            $acc[] = "- {$item}: {$firstFile[$item]}";
+        }
+        // new value
+        if (!key_exists($item, $firstFile) && key_exists($item, $secondFile)) {
+            $acc[] = "+ {$item}: {$secondFile[$item]}";
+        }
+        
+        if (key_exists($item, $firstFile) && key_exists($item, $secondFile)) {
+            // same value
+            if ($firstFile[$item] === $secondFile[$item]) {
+                $acc[] = "  {$item}: {$firstFile[$item]}";
+            // changed value
+            } else {
+                $acc[] = "+ {$item}: {$secondFile[$item]}";
+                $acc[] = "- {$item}: {$firstFile[$item]}";
+            }
+        }
+        $acc[] = '}';
+
+		return $acc;
+    }, ['{']);
+    
     var_dump($res);
-
-    $unchanged = array_intersect_assoc(FIRST_FILE, SECOND_FILE);
-    $old = array_diff_key(FIRST_FILE, SECOND_FILE);
-    $new = array_diff_key(SECOND_FILE, FIRST_FILE);
-    $changed = array_diff_assoc(FIRST_FILE, SECOND_FILE);
-    $changed2 = array_diff_assoc(SECOND_FILE, FIRST_FILE);
-    $a = array_intersect_key($changed2, $changed);
-
-    print PHP_EOL."Не изменились: ";
-    var_dump($unchanged);
-    print PHP_EOL."Удалены: ";
-    var_dump($old);
-    print PHP_EOL."Созданы: ";
-    var_dump($new);
-    print PHP_EOL."Изменены: ";
-    var_dump($changed);
-    var_dump($changed2);
-    var_dump($a);
-
-    
-    $different = array_diff_assoc(FIRST_FILE, SECOND_FILE);
-    
-
-
-
-    
 }

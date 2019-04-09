@@ -18,5 +18,8 @@ class DifferTest extends TestCase
 }";
         $actual = genDiff('before.json', 'after.json');
         $this->assertEquals($expected, $actual);
+
+        $actual = genDiff('before.yml', 'after.yml');
+        $this->assertEquals($expected, $actual);
     }
 }

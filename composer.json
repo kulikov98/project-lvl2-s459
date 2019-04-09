@@ -14,7 +14,7 @@
     "require": {
         "wp-cli/php-cli-tools": "^0.11.11",
         "docopt/docopt": "^1.0",
-        "symfony/yaml": "^4.3"
+        "symfony/yaml": "^4.3@dev"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.0@dev",
@@ -32,5 +32,7 @@
         "phpcs" : "phpcs",
         "phpunit": "phpunit",
         "test": "phpunit tests"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

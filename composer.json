@@ -24,7 +24,8 @@
     "minimum-stability": "dev",
     "autoload": {
         "files": [
-            "src/Differ.php"
+            "src/Differ.php",
+            "src/Functions.php"
         ],
         "psr-4": {
             "Differ\\Tests\\": "tests"

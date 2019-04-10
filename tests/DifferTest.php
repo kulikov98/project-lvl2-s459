@@ -9,17 +9,11 @@ class DifferTest extends TestCase
 {
     public function testGenDiff()
     {
-        $expected = "{
-  host: hexlet.io
-+ timeout: 20
-- timeout: 50
-- proxy: 123.234.53.22
-+ verbose: 1
-}";
-        $actual = genDiff('before.json', 'after.json');
+        $expected = file_get_contents('tests'.DIRECTORY_SEPARATOR.'expected.txt');
+        $actual = genDiff('tests'.DIRECTORY_SEPARATOR.'before.json', 'tests'.DIRECTORY_SEPARATOR.'after.json');
         $this->assertEquals($expected, $actual);
 
-        $actual = genDiff('before.yml', 'after.yml');
+        $actual = genDiff('tests'.DIRECTORY_SEPARATOR.'before.yml', 'tests'.DIRECTORY_SEPARATOR.'after.yml');
         $this->assertEquals($expected, $actual);
     }
 }

@@ -27,9 +27,9 @@ DOC;
 
 $args = (new \Docopt\Handler)->handle(DOC);
 
-define('FIRST_PATH', $args->args['<firstFile>']);
-define('SECOND_PATH', $args->args['<secondFile>']);
+$firstPath = $args->args['<firstFile>'];
+$secondPath = $args->args['<secondFile>'];
 
-$diff = genDiff(FIRST_PATH, SECOND_PATH);
+$diff = genDiff($firstPath, $secondPath);
 
 line($diff);

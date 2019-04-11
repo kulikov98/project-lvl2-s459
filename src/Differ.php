@@ -2,25 +2,19 @@
 
 namespace Differ;
 
-use Symfony\Component\Yaml\Yaml;
 use function Functions\genDiffText;
+use function Parser\parse;
 
 function genDiff($firstPath, $secondPath)
 {
-    $firstFileFormat = pathinfo($firstPath, PATHINFO_EXTENSION);
-    $secondFileFormat = pathinfo($secondPath, PATHINFO_EXTENSION);
+    $firstFileExt = pathinfo($firstPath, PATHINFO_EXTENSION);
+    $firstFileExt = pathinfo($secondPath, PATHINFO_EXTENSION);
 
-    if ($firstFileFormat === $secondFileFormat) {
-        switch ($firstFileFormat) {
-            case 'json':
-                $firstFileContentJson = file_get_contents($firstPath);
-                $secondFileContentJson = file_get_contents($secondPath);
-                break;
-            case 'yml':
-                $firstFileContentJson = json_encode(Yaml::parseFile($firstPath, Yaml::PARSE_OBJECT_FOR_MAP));
-                $secondFileContentJson = json_encode(Yaml::parseFile($secondPath, Yaml::PARSE_OBJECT_FOR_MAP));
-                break;
-        }
-        return genDiffText($firstFileContentJson, $secondFileContentJson);
+    if ($firstFileExt !== $firstFileExt) {
+        return 'Cannot compare files of different extensions.';
     }
+
+    $files = parse($firstFileExt, $firstPath, $secondPath);
+
+    return genDiffText($files['first'], $files['second']);
 }

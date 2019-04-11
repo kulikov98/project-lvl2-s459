@@ -2,30 +2,31 @@
 
 namespace Functions;
 
-function genDiffText($firstFileContentContentJson, $secondFileContentContentJson)
+function genDiffText($firstFileJson, $secondFileJson)
 {
-    $firstFileContent = json_decode($firstFileContentContentJson, true);
-    $secondFileContent = json_decode($secondFileContentContentJson, true);
+    $firstFile = json_decode($firstFileJson, true);
+    $secondFile = json_decode($secondFileJson, true);
 
-    $keys = array_unique(array_keys(array_merge($firstFileContent, $secondFileContent)));
+    $allKeys = array_keys(array_merge($firstFile, $secondFile));
+    $uniqueKeys = array_unique($allKeys);
 
-    $res = array_reduce($keys, function ($acc, $item) use ($firstFileContent, $secondFileContent) {
+    $res = array_reduce($uniqueKeys, function ($acc, $item) use ($firstFile, $secondFile) {
         // deleted value
-        if (key_exists($item, $firstFileContent) && !key_exists($item, $secondFileContent)) {
-            $acc[] = "- {$item}: {$firstFileContent[$item]}";
+        if (key_exists($item, $firstFile) && !key_exists($item, $secondFile)) {
+            $acc[] = "- {$item}: {$firstFile[$item]}";
         }
         // new value
-        if (!key_exists($item, $firstFileContent) && key_exists($item, $secondFileContent)) {
-            $acc[] = "+ {$item}: {$secondFileContent[$item]}";
+        if (!key_exists($item, $firstFile) && key_exists($item, $secondFile)) {
+            $acc[] = "+ {$item}: {$secondFile[$item]}";
         }
-        if (key_exists($item, $firstFileContent) && key_exists($item, $secondFileContent)) {
+        if (key_exists($item, $firstFile) && key_exists($item, $secondFile)) {
             // same value
-            if ($firstFileContent[$item] === $secondFileContent[$item]) {
-                $acc[] = "  {$item}: {$firstFileContent[$item]}";
+            if ($firstFile[$item] === $secondFile[$item]) {
+                $acc[] = "  {$item}: {$firstFile[$item]}";
                 // changed value
             } else {
-                $acc[] = "+ {$item}: {$secondFileContent[$item]}";
-                $acc[] = "- {$item}: {$firstFileContent[$item]}";
+                $acc[] = "+ {$item}: {$secondFile[$item]}";
+                $acc[] = "- {$item}: {$firstFile[$item]}";
             }
         }
         return $acc;

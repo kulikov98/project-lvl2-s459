@@ -9,11 +9,11 @@ class DifferTest extends TestCase
 {
     public function testGenDiff()
     {
-        $expected = file_get_contents('tests'.DIRECTORY_SEPARATOR.'expected.txt');
-        $actual = genDiff('tests'.DIRECTORY_SEPARATOR.'before.json', 'tests'.DIRECTORY_SEPARATOR.'after.json');
+        $expected = file_get_contents('tests' . DIRECTORY_SEPARATOR . 'expected.txt');
+        $actual = genDiff('tests' . DIRECTORY_SEPARATOR . 'before.json', 'tests' . DIRECTORY_SEPARATOR . 'after.json');
         $this->assertEquals($expected, $actual);
 
-        $actual = genDiff('tests'.DIRECTORY_SEPARATOR.'before.yml', 'tests'.DIRECTORY_SEPARATOR.'after.yml');
+        $actual = genDiff('tests' . DIRECTORY_SEPARATOR . 'before.yml', 'tests' . DIRECTORY_SEPARATOR . 'after.yml');
         $this->assertEquals($expected, $actual);
     }
 }

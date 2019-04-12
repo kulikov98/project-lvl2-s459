@@ -2,53 +2,66 @@
 
 namespace Differ;
 
-use function Parser\parse;
+use function Differ\Parser\parse;
 
-function genDiff($firstPath, $secondPath)
+function genDiff(string $firstPath, string $secondPath)
 {
     $firstFileExt = pathinfo($firstPath, PATHINFO_EXTENSION);
-    $firstFileExt = pathinfo($secondPath, PATHINFO_EXTENSION);
+    $secondFileExt = pathinfo($secondPath, PATHINFO_EXTENSION);
 
-    if ($firstFileExt !== $firstFileExt) {
+    if ($firstFileExt !== $secondFileExt) {
         return 'Cannot compare files of different extensions.';
     }
 
-    $files = parse($firstFileExt, $firstPath, $secondPath);
+    $firstFileData = file_get_contents($firstPath, true);
+    $secondFileData = file_get_contents($secondPath, true);
 
-    return genDiffText($files['first'], $files['second']);
+    $firstFileArray = parse($firstFileExt, $firstFileData);
+    $secondFileArray = parse($secondFileExt, $secondFileData);
+    
+    $ast = genDiffAST($firstFileArray, $secondFileArray);
+
+    return $ast;
 }
 
-function genDiffText($firstFileJson, $secondFileJson)
+function genDiffAST(array $firstFile, array $secondFile)
 {
-    $firstFile = json_decode($firstFileJson, true);
-    $secondFile = json_decode($secondFileJson, true);
-
-    $allKeys = array_keys(array_merge($firstFile, $secondFile));
+    $mergedFiles = array_merge($firstFile, $secondFile);
+    $allKeys = array_keys($mergedFiles);
     $uniqueKeys = array_unique($allKeys);
 
-    $res = array_reduce($uniqueKeys, function ($acc, $item) use ($firstFile, $secondFile) {
-        // deleted value
-        if (key_exists($item, $firstFile) && !key_exists($item, $secondFile)) {
-            $acc[] = "- {$item}: {$firstFile[$item]}";
-        }
-        // new value
-        if (!key_exists($item, $firstFile) && key_exists($item, $secondFile)) {
-            $acc[] = "+ {$item}: {$secondFile[$item]}";
-        }
-        if (key_exists($item, $firstFile) && key_exists($item, $secondFile)) {
-            // same value
-            if ($firstFile[$item] === $secondFile[$item]) {
-                $acc[] = "  {$item}: {$firstFile[$item]}";
-                // changed value
-            } else {
-                $acc[] = "+ {$item}: {$secondFile[$item]}";
-                $acc[] = "- {$item}: {$firstFile[$item]}";
-            }
-        }
-        return $acc;
-    }, ['{']);
+    $ast = array_reduce($uniqueKeys, function ($ast, $name) use ($firstFile, $secondFile) {
 
-    $res[] = '}';
+        $firstFileValue = $firstFile[$name] ?? null;
+        $secondFileValue = $secondFile[$name] ?? null;
 
-    return implode(PHP_EOL, $res);
+        // removed value
+        if (!key_exists($name, $secondFile)) {
+            $ast[] = ['type' => 'removed', 'name' => $name, 'before' => $firstFileValue];
+            return $ast;
+        }
+        // added value
+        if (!key_exists($name, $firstFile)) {
+            $ast[] = ['type' => 'added', 'name' => $name, 'after' => $secondFileValue];
+            return $ast;
+        }
+        // nested children
+        if (is_array($firstFileValue) && is_array($secondFileValue)) {
+            $children = genDiffAST($firstFileValue, $secondFileValue);
+            $ast[] = ['type' => 'nested', 'name' => $name,
+                      'before' => $firstFileValue, 'after' => $secondFileValue, 'children' => $children];
+            return $ast;
+        }
+        // same value
+        if ($firstFileValue === $secondFileValue) {
+            $ast[] = ['type' => 'unchanged', 'name' => $name, 'before' => $firstFileValue, 'after' => $secondFileValue];
+            return $ast;
+        }
+        // changed
+        if (key_exists($name, $firstFile) && key_exists($name, $secondFile) && $firstFileValue !== $secondFileValue) {
+            $ast[] = ['type' => 'changed', 'name' => $name, 'before' => $firstFileValue, 'after' => $secondFileValue];
+            return $ast;
+        }
+    }, []);
+    return $ast;
 }

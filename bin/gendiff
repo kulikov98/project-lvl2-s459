@@ -32,4 +32,7 @@ $secondPath = $args->args['<secondFile>'];
 
 $diff = genDiff($firstPath, $secondPath);
 
-line($diff);
+//$res = json_encode($diff);
+var_dump($diff);
+
+//line($diff);

@@ -26,7 +26,8 @@
     "autoload": {
         "files": [
             "src/Differ.php",
-            "src/Parser.php"
+            "src/Parser.php",
+            "src/Renderer.php"
         ],
         "psr-4": {
             "Differ\\Tests\\": "tests"

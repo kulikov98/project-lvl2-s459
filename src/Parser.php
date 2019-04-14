@@ -4,12 +4,12 @@ namespace Differ\Parser;
 
 use Symfony\Component\Yaml\Yaml;
 
-function parse($fileExt, $fileData)
+function parse($extension, $data)
 {
-    switch ($fileExt) {
+    switch ($extension) {
         case 'json':
-            return json_decode($fileData, true);
+            return json_decode($data, true);
         case 'yml':
-            return Yaml::parse($fileData);
+            return Yaml::parse($data);
     }
 }

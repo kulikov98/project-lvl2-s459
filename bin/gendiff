@@ -30,9 +30,6 @@ $args = (new \Docopt\Handler)->handle(DOC);
 $firstPath = $args->args['<firstFile>'];
 $secondPath = $args->args['<secondFile>'];
 
-$diff = genDiff($firstPath, $secondPath);
+$diff = "{".genDiff($firstPath, $secondPath)."}";
 
-//$res = json_encode($diff);
-var_dump($diff);
-
-//line($diff);
+line($diff);

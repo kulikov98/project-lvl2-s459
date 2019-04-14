@@ -3,6 +3,7 @@
 namespace Differ;
 
 use function Differ\Parser\parse;
+use function Differ\Renderer\renderAST;
 
 function genDiff(string $firstPath, string $secondPath)
 {
@@ -10,7 +11,7 @@ function genDiff(string $firstPath, string $secondPath)
     $secondFileExt = pathinfo($secondPath, PATHINFO_EXTENSION);
 
     if ($firstFileExt !== $secondFileExt) {
-        return 'Cannot compare files of different extensions.';
+        throw new Error('Cannot compare files of different extensions.');
     }
 
     $firstFileData = file_get_contents($firstPath, true);
@@ -21,45 +22,47 @@ function genDiff(string $firstPath, string $secondPath)
     
     $ast = genDiffAST($firstFileArray, $secondFileArray);
 
-    return $ast;
+    return renderAST($ast);
 }
 
 function genDiffAST(array $firstFile, array $secondFile)
 {
-    $mergedFiles = array_merge($firstFile, $secondFile);
-    $allKeys = array_keys($mergedFiles);
-    $uniqueKeys = array_unique($allKeys);
+    $keys = array_merge(
+        array_keys($firstFile),
+        array_keys($secondFile)
+    );
+    $uniqueKeys = array_unique($keys);
 
-    $ast = array_reduce($uniqueKeys, function ($ast, $name) use ($firstFile, $secondFile) {
+    $ast = array_reduce($uniqueKeys, function ($ast, $key) use ($firstFile, $secondFile) {
 
-        $firstFileValue = $firstFile[$name] ?? null;
-        $secondFileValue = $secondFile[$name] ?? null;
+        $firstFileValue = $firstFile[$key] ?? null;
+        $secondFileValue = $secondFile[$key] ?? null;
 
         // removed value
-        if (!key_exists($name, $secondFile)) {
-            $ast[] = ['type' => 'removed', 'name' => $name, 'before' => $firstFileValue];
+        if (!key_exists($key, $secondFile)) {
+            $ast[] = ['type' => 'removed', 'name' => $key, 'before' => $firstFileValue];
             return $ast;
         }
         // added value
-        if (!key_exists($name, $firstFile)) {
-            $ast[] = ['type' => 'added', 'name' => $name, 'after' => $secondFileValue];
+        if (!key_exists($key, $firstFile)) {
+            $ast[] = ['type' => 'added', 'name' => $key, 'after' => $secondFileValue];
             return $ast;
         }
         // nested children
         if (is_array($firstFileValue) && is_array($secondFileValue)) {
             $children = genDiffAST($firstFileValue, $secondFileValue);
-            $ast[] = ['type' => 'nested', 'name' => $name,
+            $ast[] = ['type' => 'nested', 'name' => $key,
                       'before' => $firstFileValue, 'after' => $secondFileValue, 'children' => $children];
             return $ast;
         }
         // same value
         if ($firstFileValue === $secondFileValue) {
-            $ast[] = ['type' => 'unchanged', 'name' => $name, 'before' => $firstFileValue, 'after' => $secondFileValue];
+            $ast[] = ['type' => 'unchanged', 'name' => $key, 'before' => $firstFileValue, 'after' => $secondFileValue];
             return $ast;
         }
         // changed
-        if (key_exists($name, $firstFile) && key_exists($name, $secondFile) && $firstFileValue !== $secondFileValue) {
-            $ast[] = ['type' => 'changed', 'name' => $name, 'before' => $firstFileValue, 'after' => $secondFileValue];
+        if (key_exists($key, $firstFile) && key_exists($key, $secondFile) && $firstFileValue !== $secondFileValue) {
+            $ast[] = ['type' => 'changed', 'name' => $key, 'before' => $firstFileValue, 'after' => $secondFileValue];
             return $ast;
         }
     }, []);

@@ -27,7 +27,8 @@
         "files": [
             "src/Differ.php",
             "src/Parser.php",
-            "src/Renderer.php"
+            "src/Renderer.php",
+            "src/Ast.php"
         ],
         "psr-4": {
             "Differ\\Tests\\": "tests"

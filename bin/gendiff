@@ -22,14 +22,15 @@ const DOC = <<<DOC
 
     Options:
         -h --help                     Show this screen
-        --format <fmt>                Report format [default: pretty]
+        --format <fmt>                Report format [default: plain]
 DOC;
 
 $args = (new \Docopt\Handler)->handle(DOC);
 
 $firstPath = $args->args['<firstFile>'];
 $secondPath = $args->args['<secondFile>'];
+$format = $args->args['--format'];
 
-$diff = "{".genDiff($firstPath, $secondPath)."}";
+$diff = genDiff($firstPath, $secondPath, $format);
 
 line($diff);

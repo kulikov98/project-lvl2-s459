@@ -3,28 +3,33 @@
 namespace Differ;
 
 use function Differ\Parser\parse;
-use function Differ\Renderer\astToPlain;
 use function Differ\Ast\genDiffAST;
+use function Differ\Renderer\Plain\astToPlain;
+use function Differ\Renderer\Text\astToText;
 
 function genDiff(string $firstPath, string $secondPath, string $format) : string
 {
-    $firstFileFormat = pathinfo($firstPath, PATHINFO_EXTENSION);
-    $secondFileFormat = pathinfo($secondPath, PATHINFO_EXTENSION);
+    $firstFormat = pathinfo($firstPath, PATHINFO_EXTENSION);
+    $secondFormat = pathinfo($secondPath, PATHINFO_EXTENSION);
 
-    if ($firstFileFormat !== $secondFileFormat) {
+    if ($firstFormat !== $secondFormat) {
         throw new \Exception('Cannot compare files of different formats.');
     }
 
-    $firstFile = file_get_contents($firstPath, true);
-    $secondFile = file_get_contents($secondPath, true);
+    $firstData = file_get_contents($firstPath, true);
+    $secondData = file_get_contents($secondPath, true);
 
-    $firstFileData = parse($firstFileFormat, $firstFile);
-    $secondFileData = parse($secondFileFormat, $secondFile);
+    $firstParsed = parse($firstFormat, $firstData);
+    $secondParsed = parse($secondFormat, $secondData);
 
-    $ast = genDiffAST($firstFileData, $secondFileData);
+    $ast = genDiffAST($firstParsed, $secondParsed);
 
     switch ($format) {
         case 'plain':
             return astToPlain($ast);
+            break;
+        case 'text':
+            return "{". PHP_EOL .astToText($ast). PHP_EOL ."}";
+            break;
     }
 }

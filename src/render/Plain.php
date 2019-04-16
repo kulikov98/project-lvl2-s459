@@ -1,6 +1,6 @@
 <?php
 
-namespace Differ\Renderer;
+namespace Differ\Renderer\Plain;
 
 function toString($value): string
 {
@@ -13,7 +13,7 @@ function toString($value): string
     return $stringValue;
 }
 
-function astToPlain(array $ast, $path = '')
+function astToPlain(array $ast, string $path = '') : string
 {
     $diff = array_reduce($ast, function ($diff, $node) use ($path) {
         if (isset($node['beforeValue'])) {

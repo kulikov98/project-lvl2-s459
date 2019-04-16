@@ -9,37 +9,34 @@ class DifferTest extends TestCase
 {
     public function testGenDiff()
     {
-        $format = 'plain';
-
-        $expectedFlat = file_get_contents(
-            'tests' . DIRECTORY_SEPARATOR . 'fixtures'. DIRECTORY_SEPARATOR . 'expected'
-        );
-        $expectedNested = file_get_contents(
+        // Plain
+        $expected = file_get_contents(
             'tests' . DIRECTORY_SEPARATOR . 'fixtures'. DIRECTORY_SEPARATOR . 'nested'
-            . DIRECTORY_SEPARATOR . 'expected'
+            . DIRECTORY_SEPARATOR . 'expectedPlain'
         );
-        
-        $actual = genDiff(
-            'tests' . DIRECTORY_SEPARATOR . 'fixtures'. DIRECTORY_SEPARATOR .'before.json',
-            'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'after.json',
-            $format
-        );
-        $this->assertEquals($expectedFlat, $actual);
-
-        $actual = genDiff(
-            'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR .'before.yml',
-            'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'after.yml',
-            $format
-        );
-        $this->assertEquals($expectedFlat, $actual);
 
         $actual = genDiff(
             'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'nested'
             . DIRECTORY_SEPARATOR . 'before.json',
             'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'nested'
             . DIRECTORY_SEPARATOR . 'after.json',
-            $format
+            'plain'
         );
-        $this->assertEquals($expectedNested, $actual);
+        $this->assertEquals($expected, $actual);
+
+        // Text
+        $expected = file_get_contents(
+            'tests' . DIRECTORY_SEPARATOR . 'fixtures'. DIRECTORY_SEPARATOR . 'nested'
+            . DIRECTORY_SEPARATOR . 'expectedText'
+        );
+
+        $actual = genDiff(
+            'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'nested'
+            . DIRECTORY_SEPARATOR . 'before.json',
+            'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'nested'
+            . DIRECTORY_SEPARATOR . 'after.json',
+            'text'
+        );
+        $this->assertEquals($expected, $actual);
     }
 }

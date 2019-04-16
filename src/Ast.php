@@ -4,50 +4,50 @@ namespace Differ\Ast;
 
 use function Funct\Collection\union;
 
-function genDiffAST(array $firstFile, array $secondFile)
+function genDiffAST(array $firstParsed, array $secondParsed) : array
 {
     $keys = union(
-        array_keys($firstFile),
-        array_keys($secondFile)
+        array_keys($firstParsed),
+        array_keys($secondParsed)
     );
 
-    $ast = array_reduce($keys, function ($ast, $key) use ($firstFile, $secondFile) {
+    $ast = array_reduce($keys, function ($ast, $key) use ($firstParsed, $secondParsed) {
 
-        $firstFileValue = $firstFile[$key] ?? null;
-        $secondFileValue = $secondFile[$key] ?? null;
+        $beforeValue = $firstParsed[$key] ?? null;
+        $afterValue = $secondParsed[$key] ?? null;
 
         // removed value
-        if (!key_exists($key, $secondFile)) {
-            $ast[] = ['type' => 'removed', 'name' => $key, 'beforeValue' => $firstFileValue];
+        if (!key_exists($key, $secondParsed)) {
+            $ast[] = ['type' => 'removed', 'name' => $key, 'beforeValue' => $beforeValue];
             return $ast;
         }
         // added value
-        if (!key_exists($key, $firstFile)) {
-            $ast[] = ['type' => 'added', 'name' => $key, 'afterValue' => $secondFileValue];
+        if (!key_exists($key, $firstParsed)) {
+            $ast[] = ['type' => 'added', 'name' => $key, 'afterValue' => $afterValue];
             return $ast;
         }
         // nested children
-        if (is_array($firstFileValue) && is_array($secondFileValue)) {
-            $children = genDiffAST($firstFileValue, $secondFileValue);
+        if (is_array($beforeValue) && is_array($afterValue)) {
+            $children = genDiffAST($beforeValue, $afterValue);
             $ast[] = [
                 'type' => 'nested', 'name' => $key,
-                'beforeValue' => $firstFileValue, 'afterValue' => $secondFileValue, 'children' => $children
+                'beforeValue' => $beforeValue, 'afterValue' => $afterValue, 'children' => $children
             ];
             return $ast;
         }
         // same value
-        if ($firstFileValue === $secondFileValue) {
+        if ($beforeValue === $afterValue) {
             $ast[] = [
-                'type' => 'unchanged', 'name' => $key, 'beforeValue' => $firstFileValue,
-                'afterValue' => $secondFileValue
+                'type' => 'unchanged', 'name' => $key, 'beforeValue' => $beforeValue,
+                'afterValue' => $afterValue
             ];
             return $ast;
         }
         // changed
-        if (key_exists($key, $firstFile) && key_exists($key, $secondFile)
-        && $firstFileValue !== $secondFileValue) {
-            $ast[] = ['type' => 'changed', 'name' => $key, 'beforeValue' => $firstFileValue,
-            'afterValue' => $secondFileValue];
+        if (key_exists($key, $firstParsed) && key_exists($key, $secondParsed)
+        && $beforeValue !== $afterValue) {
+            $ast[] = ['type' => 'changed', 'name' => $key, 'beforeValue' => $beforeValue,
+            'afterValue' => $afterValue];
             return $ast;
         }
     }, []);

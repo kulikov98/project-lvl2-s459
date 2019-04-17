@@ -28,8 +28,8 @@
             "src/Differ.php",
             "src/Parser.php",
             "src/Ast.php",
-            "src/render/Plain.php",
-            "src/render/Text.php"
+            "src/renderer/Plain.php",
+            "src/renderer/Text.php"
         ],
         "psr-4": {
             "Differ\\Tests\\": "tests"

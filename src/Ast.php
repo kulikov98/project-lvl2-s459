@@ -4,25 +4,25 @@ namespace Differ\Ast;
 
 use function Funct\Collection\union;
 
-function genDiffAST(array $firstParsed, array $secondParsed) : array
+function genDiffAST(array $beforeData, array $afterData) : array
 {
     $keys = union(
-        array_keys($firstParsed),
-        array_keys($secondParsed)
+        array_keys($beforeData),
+        array_keys($afterData)
     );
 
-    $ast = array_reduce($keys, function ($ast, $key) use ($firstParsed, $secondParsed) {
+    $ast = array_reduce($keys, function ($ast, $key) use ($beforeData, $afterData) {
 
-        $beforeValue = $firstParsed[$key] ?? null;
-        $afterValue = $secondParsed[$key] ?? null;
+        $beforeValue = $beforeData[$key] ?? null;
+        $afterValue = $afterData[$key] ?? null;
 
         // removed value
-        if (!key_exists($key, $secondParsed)) {
+        if (!key_exists($key, $afterData)) {
             $ast[] = ['type' => 'removed', 'name' => $key, 'beforeValue' => $beforeValue];
             return $ast;
         }
         // added value
-        if (!key_exists($key, $firstParsed)) {
+        if (!key_exists($key, $beforeData)) {
             $ast[] = ['type' => 'added', 'name' => $key, 'afterValue' => $afterValue];
             return $ast;
         }
@@ -44,7 +44,7 @@ function genDiffAST(array $firstParsed, array $secondParsed) : array
             return $ast;
         }
         // changed
-        if (key_exists($key, $firstParsed) && key_exists($key, $secondParsed)
+        if (key_exists($key, $beforeData) && key_exists($key, $afterData)
         && $beforeValue !== $afterValue) {
             $ast[] = ['type' => 'changed', 'name' => $key, 'beforeValue' => $beforeValue,
             'afterValue' => $afterValue];

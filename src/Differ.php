@@ -4,10 +4,10 @@ namespace Differ;
 
 use function Differ\Parser\parse;
 use function Differ\Ast\genDiffAST;
-use function Differ\Renderer\Plain\astToPlain;
-use function Differ\Renderer\Text\astToText;
+use function Differ\Renderer\Plain\genPlainDiff;
+use function Differ\Renderer\Text\genTextDiff;
 
-function genDiff(string $firstPath, string $secondPath, string $format) : string
+function genDiff(string $firstPath, string $secondPath, string $format): string
 {
     $firstFormat = pathinfo($firstPath, PATHINFO_EXTENSION);
     $secondFormat = pathinfo($secondPath, PATHINFO_EXTENSION);
@@ -26,10 +26,8 @@ function genDiff(string $firstPath, string $secondPath, string $format) : string
 
     switch ($format) {
         case 'plain':
-            return astToPlain($ast);
-            break;
+            return genPlainDiff($ast);
         case 'text':
-            return "{". PHP_EOL .astToText($ast). PHP_EOL ."}";
-            break;
+            return genTextDiff($ast);
     }
 }

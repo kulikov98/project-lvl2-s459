@@ -2,6 +2,11 @@
 
 namespace Differ\Renderer\Text;
 
+function genTextDiff($ast)
+{
+    return "{" . PHP_EOL . astToText($ast) . PHP_EOL . "}";
+}
+
 function toString($arr, $depth)
 {
     $indent = str_repeat('    ', $depth);
@@ -15,37 +20,44 @@ function toString($arr, $depth)
     }, $keys);
 
     $res = implode(PHP_EOL, $res);
-    return "{". PHP_EOL .$res. PHP_EOL;
+    return "{" . PHP_EOL . $res . PHP_EOL;
 }
 
-function astToText(array $ast, $depth = 1) : string
+function getValue($value, $depth, $indent)
+{
+    if (is_array($value)) {
+        return toString($value, $depth + 1) . "{$indent}  }";
+    }
+    return $value;
+}
+
+function astToText(array $ast, $depth = 1): string
 {
     $indent = str_repeat('    ', $depth);
-    
+
     $res = array_map(function ($item) use ($indent, $depth) {
 
         switch ($item['type']) {
             case 'added':
-                is_array($item['afterValue']) ? $after = toString($item['afterValue'], $depth + 1) . "{$indent}  }" : $after = $item['afterValue'];
+                $after = getValue($item['afterValue'], $depth, $indent);
                 return "{$indent}+ {$item['name']}: {$after}";
-                
+
             case 'removed':
-                is_array($item['beforeValue']) ? $before = toString($item['beforeValue'], $depth + 1) . "{$indent}  }" : $before = $item['beforeValue'];
+                $before = getValue($item['beforeValue'], $depth, $indent);
                 return "{$indent}- {$item['name']}: {$before}";
-                
+
             case 'unchanged':
-                is_array($item['beforeValue']) ? $before = toString($item['beforeValue'], $depth + 1) . "{$indent}  }" : $before = $item['beforeValue'];
+                $before = getValue($item['beforeValue'], $depth, $indent);
                 return "{$indent}  {$item['name']}: {$before}";
-                
+
             case 'changed':
-                is_array($item['afterValue']) ? $after = toString($item['afterValue'], $depth + 1) . "{$indent}  }" : $after = $item['afterValue'];
-                is_array($item['beforeValue']) ? $before = toString($item['beforeValue'], $depth + 1) . "{$indent}  }" : $before = $item['beforeValue'];
+                $after = getValue($item['afterValue'], $depth, $indent);
+                $before = getValue($item['beforeValue'], $depth, $indent);
                 return "{$indent}+ {$item['name']}: {$after}" . PHP_EOL . "{$indent}- {$item['name']}: {$before}";
-                
+
             case 'nested':
                 $nested = astToText($item['children'], $depth + 1);
-                return "{$indent}  {$item['name']}: {" . PHP_EOL . "{$nested}" . PHP_EOL ."{$indent}  }";
-                
+                return "{$indent}  {$item['name']}: {" . PHP_EOL . "{$nested}" . PHP_EOL . "{$indent}  }";
         }
     }, $ast);
     return implode(PHP_EOL, $res);

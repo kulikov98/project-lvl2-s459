@@ -6,6 +6,7 @@ use function Differ\Parser\parse;
 use function Differ\Ast\genDiffAST;
 use function Differ\Renderer\Plain\genPlainDiff;
 use function Differ\Renderer\Text\genTextDiff;
+use function Differ\Renderer\Json\genJsonDiff;
 
 function genDiff(string $firstPath, string $secondPath, string $format): string
 {
@@ -25,9 +26,11 @@ function genDiff(string $firstPath, string $secondPath, string $format): string
     $ast = genDiffAST($firstParsed, $secondParsed);
 
     switch ($format) {
-        case 'plain':
-            return genPlainDiff($ast);
         case 'text':
             return genTextDiff($ast);
+        case 'json':
+            return genJsonDiff($ast);
+        default:
+            return genPlainDiff($ast);
     }
 }

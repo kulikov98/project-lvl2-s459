@@ -38,5 +38,20 @@ class DifferTest extends TestCase
             'text'
         );
         $this->assertEquals($expected, $actual);
+
+        // Json
+        $expected = file_get_contents(
+            'tests' . DIRECTORY_SEPARATOR . 'fixtures'. DIRECTORY_SEPARATOR . 'nested'
+            . DIRECTORY_SEPARATOR . 'expectedJson'
+        );
+
+        $actual = genDiff(
+            'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'nested'
+            . DIRECTORY_SEPARATOR . 'before.json',
+            'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'nested'
+            . DIRECTORY_SEPARATOR . 'after.json',
+            'json'
+        );
+        $this->assertEquals($expected, $actual);
     }
 }

@@ -28,9 +28,9 @@
             "src/Differ.php",
             "src/Parser.php",
             "src/Ast.php",
-            "src/renderer/Plain.php",
-            "src/renderer/Text.php",
-            "src/renderer/Json.php"
+            "src/renderers/Plain.php",
+            "src/renderers/Text.php",
+            "src/renderers/Json.php"
         ],
         "psr-4": {
             "Differ\\Tests\\": "tests"
